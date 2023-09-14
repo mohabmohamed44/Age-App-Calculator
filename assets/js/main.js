@@ -1,138 +1,106 @@
-// Elements
-const dayIn = document.getElementById('dayIn');
-const monthIn = document.getElementById('monthIn');
-const yearIn = document.getElementById('yearIn');
-const dayOut = document.getElementById('dayOut');
-const monthOut = document.getElementById('monthOut');
-const yearOut = document.getElementById('yearOut');
-const calculateBtn = document.getElementById('calculateBtn');
-const errorStyle = '0.5px solid var(--Light-red)';
+let inputs = document.querySelectorAll("input"); // Get all input elements on the page
+const errorMessage = document.querySelectorAll('.error-message'); // Get all error message elements on the page
 
-// Calculate Button
-calculateBtn.addEventListener('click', () => {
-    const D = dayIn.value;
-    const M = monthIn.value;
-    const Y = yearIn.value;
-    const birthday = `${Y}-${M}-${D}`;
-
-    if (validateDay() && validateMonth() && validateYear()) {
-        console.log('Done');
-    } else {
-        return;
+inputs[0].addEventListener('input', function (event) { // Add an input event listener to the first input element
+    let value = event.target.value; // Get the value entered by the user
+    if (value < 30) { // If the value is less than 30
+        if (value == 0) { // If the value is 0, set it to 1
+            value = 1
+        }
+        value = value; // Keep the same value
+    } else if (value > 30) { // If the value is greater than 30
+        value = 30 // Set the value to 30
     }
-
-    // Age Calculation
-    let years = new Date().getFullYear() - new Date(birthday).getFullYear();
-    let months = new Date().getMonth() - new Date(birthday).getMonth();
-    let days = new Date().getDate() - Number(D);
-    if (months < 0) {
-        years = years - 1;
-        months = months + 12;
-    }
-
-    if (days < 0) {
-        days += getNoOfDays(Y, M - 1);
-    }
-
-    // Display Values
-    dayOut.innerText = days;
-    monthOut.innerText = months;
-    yearOut.innerText = years;
+    event.target.value = value; // Set the input value to the corrected value
 });
 
-// Get Number of Days in a particular months
-function getNoOfDays(y, m) {
-    return new Date(y, m, 0).getDate();
-}
-
-/*================ on Blur Validation =========================*/
-
-// On Blur day validation
-dayIn.addEventListener('blur', () => {
-    validateDay();
+inputs[1].addEventListener('input', function (event) { // Add an input event listener to the second input element
+    let value = event.target.value; // Get the value entered by the user
+    if (value == 0) { // If the value is 0, set it to 1
+        value = 1
+    }
+    if (value < 12) { // If the value is less than 12
+        value = value; // Keep the same value
+    } else if (value > 12) { // If the value is greater than 12
+        value = 12 // Set the value to 12
+    }
+    event.target.value = value; // Set the input value to the corrected value
 });
 
-// Validate Day function
-const validateDay = () => {
-    const D = dayIn.value;
-    const M = monthIn.value;
-    const Y = yearIn.value;
-    if (D == '') {
-        showMessage(dayIn, 'This field is required', errorStyle);
-        return false;
-    } else if (!validDay(Y, M, D)) {
-        showMessage(dayIn, 'Must be a valid day', errorStyle);
-        return false;
-    } else {
-        showMessage(dayIn, '', '');
-        return true;
+inputs[2].addEventListener('input', function (event) { // Add an input event listener to the third input element
+    let value = event.target.value; // Get the value entered by the user
+    if (value == 0) { // If the value is 0, set it to 1
+        value = 1
     }
-};
-
-// On Blur month validation
-monthIn.addEventListener('blur', () => {
-    validateMonth();
+    if (value < 2022) { // If the value is less than 2022
+        value = value; // Keep the same value
+    } else if (value > year) { // If the value is greater than 2022
+        value = year // Set the value to 2022
+    }
+    event.target.value = value; // Set the input value to the corrected value
 });
 
-const validateMonth = () => {
-    const M = monthIn.value;
-    if (M == '') {
-        showMessage(monthIn, 'This field is required', errorStyle);
-        return false;
-    } else if (!validMonth(M)) {
-        showMessage(monthIn, 'Must be a valid month', errorStyle);
-        return false;
-    } else {
-        showMessage(monthIn, '', '');
-        return true;
-    }
-};
+// Get the current date
+const now = new Date();
+let year = now.getFullYear();
+let month = now.getMonth() + 1; // add 1 because getMonth() is 0-indexed
+let day = now.getDate();
+console.log(year)
 
-// on Blur Year validate
-yearIn.addEventListener('blur', () => {
-    validateYear();
+function calculateAge(birthdate) { // Define a function to calculate the age based on a birthdate
+    const now = new Date();
+    const birth = new Date(birthdate);
+
+    let age = {};
+
+    let yearDiff = now.getFullYear() - birth.getFullYear();
+    let monthDiff = now.getMonth() - birth.getMonth();
+    let dayDiff = now.getDate() - birth.getDate();
+
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+        yearDiff--;
+        monthDiff += 12;
+    }
+
+    let daysInLastMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+    if (dayDiff < 0) {
+        dayDiff += daysInLastMonth;
+        monthDiff--;
+    }
+
+    let totalDays = ((yearDiff * 365) + (monthDiff * daysInLastMonth) + dayDiff);
+    age.years = Math.floor(totalDays / 365);
+    totalDays = totalDays % 365;
+    age.months = Math.floor(totalDays / daysInLastMonth);
+    totalDays = totalDays % daysInLastMonth;
+    age.days = totalDays;
+
+    return age;
+}
+
+const years = document.querySelector("#years"); // Get the element with id "years"
+const months = document.querySelector("#months"); // Get the element with id "months"
+const days = document.querySelector("#days"); // Get the element with id "days"
+const button = document.getElementById("button"); // Get the button element with id "button"
+
+button.addEventListener('click', function () { // Add a click event listener to the button
+    let isEmpty = false;
+    inputs.forEach(function (input) { // Check if any input element is empty and display an error message if necessary
+        if (input.value.trim() === '') {
+            isEmpty = true;
+            input.nextSibling.nextSibling.innerHTML = "please enter a number" // Display an error message
+            input.style.border = "1px solid red"; // Set a red border around the input element
+        }
+    });
+    if (!isEmpty) { // If no input element is empty, calculate and display the age
+        for (let i = 0; i < inputs.length; i++) {
+            inputs[i].nextSibling.nextSibling.innerHTML = "" // Clear any error messages
+            inputs[i].style.border = "1px solid #ececec"; // Set the input element border back to its default color
+        }
+        const birthdate = `${inputs[2].value}-${inputs[1].value}-${inputs[0].value}'`; // Get the birthdate from the input elements
+        const age = calculateAge(birthdate); // Calculate the age based on the birthdate
+        years.innerHTML = age.years; // Display the years
+        months.innerHTML = age.months; // Display the months
+        days.innerHTML = age.days; // Display the days
+    }
 });
-
-const validateYear = () => {
-    const Y = yearIn.value;
-    const M = monthIn.value;
-    const D = dayIn.value;
-    if (Y == '') {
-        showMessage(yearIn, 'This field is required', errorStyle);
-        return false;
-    } else if (!validYear(Y, M, D)) {
-        showMessage(yearIn, 'Must be in past', errorStyle);
-        return false;
-    } else {
-        showMessage(yearIn, '', '');
-        return true;
-    }
-};
-
-// Validate Day
-function validDay(y, m, d) {
-    if (d > getNoOfDays(y, m) || d < 1) return false;
-    return true;
-}
-
-// validate Month
-function validMonth(m) {
-    if (m > 12 || m < 1) return false;
-    return true;
-}
-
-// Validate Year
-function validYear(y, m, d) {
-    const secondDate = new Date();
-    const firstDate = new Date(`${y}-${m}-${d}`);
-    if (firstDate.setHours(0, 0, 0, 0) <= secondDate.setHours(0, 0, 0, 0)) {
-        return true;
-    }
-    return false;
-}
-
-// Display Message
-function showMessage(elem, msg, border) {
-    elem.style.border = border;
-    elem.nextElementSibling.innerText = msg;
-}
