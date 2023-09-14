@@ -83,13 +83,13 @@ const months = document.querySelector("#months"); // Get the element with id "mo
 const days = document.querySelector("#days"); // Get the element with id "days"
 const button = document.getElementById("button"); // Get the button element with id "button"
 
-button.addEventListener('click', function () { // Add a click event listener to the button
+button.addEventListener('click', function () { 
     let isEmpty = false;
-    inputs.forEach(function (input) { // Check if any input element is empty and display an error message if necessary
+    inputs.forEach(function (input) { 
         if (input.value.trim() === '') {
             isEmpty = true;
-            input.nextSibling.nextSibling.innerHTML = "please enter a number" // Display an error message
-            input.style.border = "1px solid red"; // Set a red border around the input element
+            input.nextSibling.nextSibling.innerHTML = "please enter a number" 
+            input.style.border = "1px solid red"; 
         }
     });
     if (!isEmpty) { // If no input element is empty, calculate and display the age
